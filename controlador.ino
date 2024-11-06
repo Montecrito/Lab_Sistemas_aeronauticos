@@ -1,4 +1,4 @@
-#include <ESP8266WiFi.h>
+de#include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #include <Wire.h>
 //Direccion I2C de la IMU
@@ -195,4 +195,3 @@ void calibrateESCs() {
   analogWrite(motor4Pin, 1000);
   delay(2000);
 }
-//escribe aquí 
