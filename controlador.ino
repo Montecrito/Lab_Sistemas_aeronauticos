@@ -152,28 +152,28 @@ void loop() {
   float rollError = rollSetpoint - Angle[0];
   rollIntegral += rollError * deltaTime;
   float rollDerivative = (rollError - prevRollError) / deltaTime;
-  float rollOutput = Kp * rollError + Ki * rollIntegral + Kd * rollDerivative;
+  float rollOutput = Kp_Roll * rollError + Ki_Roll * rollIntegral + Kd_Roll * rollDerivative;
   prevRollError = rollError;
 
   // Control PID para Pitch
   float pitchError = pitchSetpoint - Angle[1];
   pitchIntegral += pitchError * deltaTime;
   float pitchDerivative = (pitchError - prevPitchError) / deltaTime;
-  float pitchOutput = Kp * pitchError + Ki * pitchIntegral + Kd * pitchDerivative;
+  float pitchOutput = Kp_Pitch * pitchError + Ki_Pitch * pitchIntegral + Kd_Pitch * pitchDerivative;
   prevPitchError = pitchError;
 
-  // Control PID para Yaw
+  
   float yawError = yawSetpoint - Angle[2];
   yawIntegral += yawError * deltaTime;
   float yawDerivative = (yawError - prevYawError) / deltaTime;
-  float yawOutput = Kp * yawError + Ki * yawIntegral + Kd * yawDerivative;
+  float yawOutput = Kp_Yaw * yawError + Ki_Yaw * yawIntegral + Kd_Yaw * yawDerivative;
   prevYawError = yawError;
 
-  // Asignar salidas a los motores
-  int motor1Speed = constrain(1500 + rollOutput + pitchOutput - yawOutput, 1000, 2000);
-  int motor2Speed = constrain(1500 - rollOutput + pitchOutput + yawOutput, 1000, 2000);
-  int motor3Speed = constrain(1500 - rollOutput - pitchOutput - yawOutput, 1000, 2000);
-  int motor4Speed = constrain(1500 + rollOutput - pitchOutput + yawOutput, 1000, 2000);
+
+  int motor1Speed = constrain(1000 + rollOutput + pitchOutput - yawOutput, 1000, 2000);
+  int motor2Speed = constrain(1000 - rollOutput + pitchOutput + yawOutput, 1000, 2000);
+  int motor3Speed = constrain(1000 - rollOutput - pitchOutput - yawOutput, 1000, 2000);
+  int motor4Speed = constrain(1000 + rollOutput - pitchOutput + yawOutput, 1000, 2000);
 
   // Enviar señales a los motores
   analogWrite(motor1Pin, motor1Speed);
