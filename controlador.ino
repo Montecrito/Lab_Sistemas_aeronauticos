@@ -1,4 +1,4 @@
-de#include <ESP8266WiFi.h>
+#include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #include <Wire.h>
 //Direccion I2C de la IMU
@@ -25,7 +25,10 @@ float Angle[3]; //Angle[0]=Roll, Angle[1]=pitch,Angle[2]=yaw
 float rollSetpoint = 0, pitchSetpoint = 0, yawSetpoint = 0;
 
 // Constantes PID
-float Kp = 1.5, Ki = 0.05, Kd = 0.8;
+float Kp_Roll = 20, Ki_Roll = 0, Kd_Roll = 0.57;
+float Kp_Pitch = 7.8, Ki_Pitch = 0, Kd_Pitch = 0.27;
+float Kp_Yaw = 7.8, Ki_Yaw = 0, Kd_Yaw = 0.27;
+
 float prevRollError = 0, prevPitchError = 0, prevYawError = 0;
 float rollIntegral = 0, pitchIntegral = 0, yawIntegral = 0;
 
@@ -195,6 +198,3 @@ void calibrateESCs() {
   analogWrite(motor4Pin, 1000);
   delay(2000);
 }
-
-
-ute
