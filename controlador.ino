@@ -71,7 +71,7 @@ void setup() {
   pinMode(motor4Pin, OUTPUT);
 
   // Inicialización de los motores
-  calibrateESCs();
+ // calibrateESCs();
   Serial.begin(9600);
   Serial.setTimeout(10);
 
