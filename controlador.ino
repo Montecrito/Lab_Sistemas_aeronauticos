@@ -20,9 +20,18 @@ float Acc[2];
 float Gy[3];
 float Angle[3]; //Angle[0]=Roll, Angle[1]=pitch,Angle[2]=yaw
 
+// Pines de entrada de PWM
+const int rollPin = 16;  // GPIO 16 (D0 en el NodeMCU)
+const int pitchPin = 5;  // GPIO 5 (D1 en el NodeMCU)
+const int yawPin = 4;    // GPIO 4 (D2 en el NodeMCU)
 
-// Variables para los ángulos
-float rollSetpoint = 0, pitchSetpoint = 0, yawSetpoint = 0;
+// Variables de los setpoints
+volatile float rollSetpoint = 0;
+volatile float pitchSetpoint = 0;
+volatile float yawSetpoint = 0;
+
+// Variables internas para calcular PWM
+volatile unsigned long rollPulseStart = 0, pitchPulseStart = 0, yawPulseStart = 0;
 
 // Constantes PID
 float Kp_Roll = 20, Ki_Roll = 0, Kd_Roll = 0.57;
@@ -72,9 +81,19 @@ void setup() {
 
   // Inicialización de los motores
  // calibrateESCs();
-  Serial.begin(9600);
   Serial.setTimeout(10);
+ // Configurar pines como entrada
+  pinMode(rollPin, INPUT);
+  pinMode(pitchPin, INPUT);
+  pinMode(yawPin, INPUT);
 
+  // Adjuntar interrupciones para detectar cambios
+  attachInterrupt(digitalPinToInterrupt(rollPin), handleRollPWM, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(pitchPin), handlePitchPWM, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(yawPin), handleYawPWM, CHANGE);
+
+  // Configurar Serial para depuración
+  Serial.begin(115200);
   WiFi.mode(WIFI_AP);
   WiFi.softAPConfig(ip, ip, netmask);
   WiFi.softAP(ssid, password);
@@ -104,6 +123,10 @@ void loop() {
     return;
   }
   if (client.available() >= 0) {
+    // Mapear valores PWM a rangos deseados (por ejemplo, -45° a 45°)
+  float rollAngle = map(rollSetpoint, 1000, 2000, -45, 45);  // Ejemplo de mapeo
+  float pitchAngle = map(pitchSetpoint, 1000, 2000, -45, 45);
+  float yawAngle = map(yawSetpoint, 1000, 2000, -180, 180);
   // Leer los ángulos del MPU6050
    //Leer los valores del Acelerometro de la IMU
    Wire.beginTransmission(MPU);
@@ -197,4 +220,28 @@ void calibrateESCs() {
   analogWrite(motor3Pin, 1000);
   analogWrite(motor4Pin, 1000);
   delay(2000);
+}
+// Función para calcular el ancho de pulso
+void IRAM_ATTR handleRollPWM() {
+  if (digitalRead(rollPin)) {
+    rollPulseStart = micros();  // Inicio del pulso
+  } else {
+    rollSetpoint = (micros() - rollPulseStart);  // Duración del pulso en microsegundos
+  }
+}
+
+void IRAM_ATTR handlePitchPWM() {
+  if (digitalRead(pitchPin)) {
+    pitchPulseStart = micros();  // Inicio del pulso
+  } else {
+    pitchSetpoint = (micros() - pitchPulseStart);  // Duración del pulso en microsegundos
+  }
+}
+
+void IRAM_ATTR handleYawPWM() {
+  if (digitalRead(yawPin)) {
+    yawPulseStart = micros();  // Inicio del pulso
+  } else {
+    yawSetpoint = (micros() - yawPulseStart);  // Duración del pulso en microsegundos
+  }
 }
