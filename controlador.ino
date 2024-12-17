@@ -24,16 +24,14 @@ float Angle[3]; //Angle[0]=Roll, Angle[1]=pitch,Angle[2]=yaw
 const int rollPin = 16;  // GPIO 16 (D0 en el NodeMCU)
 const int pitchPin = 5;  // GPIO 5 (D1 en el NodeMCU)
 const int yawPin = 4;    // GPIO 4 (D2 en el NodeMCU)
-const int throttlePin = 0;
+const int ThrottlePin = 0;
 // Variables de los setpoints
 volatile float rollSetpoint = 0;
 volatile float pitchSetpoint = 0;
 volatile float yawSetpoint = 0;
-volatile float throtlleSetpoint = 0;
-
+volatile float throttleSetpoint = 0;
 // Variables internas para calcular PWM
-volatile unsigned long rollPulseStart = 0, pitchPulseStart = 0, yawPulseStart = 0, throtllePulseStart = 0;
-
+volatile unsigned long rollPulseStart = 0, pitchPulseStart = 0, yawPulseStart = 0, throttlePulseStart = 0;;
 // Constantes PID
 float Kp_Roll = 20, Ki_Roll = 0, Kd_Roll = 0.57;
 float Kp_Pitch = 7.8, Ki_Pitch = 0, Kd_Pitch = 0.27;
@@ -67,6 +65,35 @@ IPAddress netmask (255,255,255,0);
 const int port = 5210;
 WiFiServer server(port);
 
+// Función para calcular el ancho de pulso
+void IRAM_ATTR handleRollPWM() {
+  if (digitalRead(rollPin)) {
+    rollPulseStart = micros();  // Inicio del pulso
+  } else {
+    rollSetpoint = (micros() - rollPulseStart);  // Duración del pulso en microsegundos
+  }
+}
+void IRAM_ATTR handlePitchPWM() {
+  if (digitalRead(pitchPin)) {
+    pitchPulseStart = micros();  // Inicio del pulso
+  } else {
+    pitchSetpoint = (micros() - pitchPulseStart);  // Duración del pulso en microsegundos
+  }
+}
+void IRAM_ATTR handleYawPWM() {
+  if (digitalRead(yawPin)) {
+    yawPulseStart = micros();  // Inicio del pulso
+  } else {
+    yawSetpoint = (micros() - yawPulseStart);  // Duración del pulso en microsegundos
+  }
+}
+void IRAM_ATTR handleThrottlePWM() {
+  if (digitalRead(ThrottlePin)) {
+    throttlePulseStart = micros();  // Inicio del pulso
+  } else {
+    throttleSetpoint = (micros() - throttlePulseStart);  // Duración del pulso en microsegundos
+  }
+}
 void setup() {
   Wire.begin(4,5);
   Wire.beginTransmission(MPU);
@@ -87,13 +114,13 @@ void setup() {
   pinMode(rollPin, INPUT);
   pinMode(pitchPin, INPUT);
   pinMode(yawPin, INPUT);
-  pinMode(throtllePin, INPUT);
+  pinMode(ThrottlePin, INPUT);
  
   // Adjuntar interrupciones para detectar cambios
   attachInterrupt(digitalPinToInterrupt(rollPin), handleRollPWM, CHANGE);
   attachInterrupt(digitalPinToInterrupt(pitchPin), handlePitchPWM, CHANGE);
   attachInterrupt(digitalPinToInterrupt(yawPin), handleYawPWM, CHANGE);
-
+  attachInterrupt(digitalPinToInterrupt(ThrottlePin), handleThrottlePWM, CHANGE);
   // Configurar Serial para depuración
   Serial.begin(115200);
   WiFi.mode(WIFI_AP);
@@ -195,10 +222,10 @@ void loop() {
   prevYawError = yawError;
 
 
-  int motor1Speed = constrain(throtlleSetpoint + rollOutput + pitchOutput - yawOutput, 1000, 2000);
-  int motor2Speed = constrain(throtlleSetpoint - rollOutput + pitchOutput + yawOutput, 1000, 2000);
-  int motor3Speed = constrain(throtlleSetpoint - rollOutput - pitchOutput - yawOutput, 1000, 2000);
-  int motor4Speed = constrain(throtlleSetpoint + rollOutput - pitchOutput + yawOutput, 1000, 2000);
+  int motor1Speed = constrain(throttleSetpoint + rollOutput + pitchOutput - yawOutput, 1000, 2000);
+  int motor2Speed = constrain(throttleSetpoint  - rollOutput + pitchOutput + yawOutput, 1000, 2000);
+  int motor3Speed = constrain(throttleSetpoint  - rollOutput - pitchOutput - yawOutput, 1000, 2000);
+  int motor4Speed = constrain(throttleSetpoint  + rollOutput - pitchOutput + yawOutput, 1000, 2000);
 
   // Enviar señales a los motores
   analogWrite(motor1Pin, motor1Speed);
@@ -223,35 +250,3 @@ void calibrateESCs() {
   analogWrite(motor4Pin, 1000);
   delay(2000);
 }
-// Función para calcular el ancho de pulso
-void IRAM_ATTR handleRollPWM() {
-  if (digitalRead(rollPin)) {
-    rollPulseStart = micros();  // Inicio del pulso
-  } else {
-    rollSetpoint = (micros() - rollPulseStart);  // Duración del pulso en microsegundos
-  }
-}
-
-void IRAM_ATTR handlePitchPWM() {
-  if (digitalRead(pitchPin)) {
-    pitchPulseStart = micros();  // Inicio del pulso
-  } else {
-    pitchSetpoint = (micros() - pitchPulseStart);  // Duración del pulso en microsegundos
-  }
-}
-
-void IRAM_ATTR handleYawPWM() {
-  if (digitalRead(yawPin)) {
-    yawPulseStart = micros();  // Inicio del pulso
-  } else {
-    yawSetpoint = (micros() - yawPulseStart);  // Duración del pulso en microsegundos
-  }
-}
-void IRAM_ATTR handlethrotllePWM() {
-  if (digitalRead(throtllePin)) {
-    throtllePulseStart = micros();  // Inicio del pulso
-  } else {
-    throtlleSetpoint = (micros() - throtllePulseStart);  // Duración del pulso en microsegundos
-  }
-}
-
