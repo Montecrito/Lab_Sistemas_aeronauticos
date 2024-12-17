@@ -24,14 +24,15 @@ float Angle[3]; //Angle[0]=Roll, Angle[1]=pitch,Angle[2]=yaw
 const int rollPin = 16;  // GPIO 16 (D0 en el NodeMCU)
 const int pitchPin = 5;  // GPIO 5 (D1 en el NodeMCU)
 const int yawPin = 4;    // GPIO 4 (D2 en el NodeMCU)
-
+const int throttlePin = 0;
 // Variables de los setpoints
 volatile float rollSetpoint = 0;
 volatile float pitchSetpoint = 0;
 volatile float yawSetpoint = 0;
+volatile float throtlleSetpoint = 0;
 
 // Variables internas para calcular PWM
-volatile unsigned long rollPulseStart = 0, pitchPulseStart = 0, yawPulseStart = 0;
+volatile unsigned long rollPulseStart = 0, pitchPulseStart = 0, yawPulseStart = 0, throtllePulseStart = 0;
 
 // Constantes PID
 float Kp_Roll = 20, Ki_Roll = 0, Kd_Roll = 0.57;
@@ -86,7 +87,8 @@ void setup() {
   pinMode(rollPin, INPUT);
   pinMode(pitchPin, INPUT);
   pinMode(yawPin, INPUT);
-
+  pinMode(throtllePin, INPUT);
+ 
   // Adjuntar interrupciones para detectar cambios
   attachInterrupt(digitalPinToInterrupt(rollPin), handleRollPWM, CHANGE);
   attachInterrupt(digitalPinToInterrupt(pitchPin), handlePitchPWM, CHANGE);
@@ -172,31 +174,31 @@ void loop() {
 
 
   // Control PID para Roll
-  float rollError = rollSetpoint - Angle[0];
+  float rollError = rollAngle - Angle[0];
   rollIntegral += rollError * deltaTime;
   float rollDerivative = (rollError - prevRollError) / deltaTime;
   float rollOutput = Kp_Roll * rollError + Ki_Roll * rollIntegral + Kd_Roll * rollDerivative;
   prevRollError = rollError;
 
   // Control PID para Pitch
-  float pitchError = pitchSetpoint - Angle[1];
+  float pitchError = pitchAngle - Angle[1];
   pitchIntegral += pitchError * deltaTime;
   float pitchDerivative = (pitchError - prevPitchError) / deltaTime;
   float pitchOutput = Kp_Pitch * pitchError + Ki_Pitch * pitchIntegral + Kd_Pitch * pitchDerivative;
   prevPitchError = pitchError;
 
   
-  float yawError = yawSetpoint - Angle[2];
+  float yawError = yawAngle - Angle[2];
   yawIntegral += yawError * deltaTime;
   float yawDerivative = (yawError - prevYawError) / deltaTime;
   float yawOutput = Kp_Yaw * yawError + Ki_Yaw * yawIntegral + Kd_Yaw * yawDerivative;
   prevYawError = yawError;
 
 
-  int motor1Speed = constrain(1000 + rollOutput + pitchOutput - yawOutput, 1000, 2000);
-  int motor2Speed = constrain(1000 - rollOutput + pitchOutput + yawOutput, 1000, 2000);
-  int motor3Speed = constrain(1000 - rollOutput - pitchOutput - yawOutput, 1000, 2000);
-  int motor4Speed = constrain(1000 + rollOutput - pitchOutput + yawOutput, 1000, 2000);
+  int motor1Speed = constrain(throtlleSetpoint + rollOutput + pitchOutput - yawOutput, 1000, 2000);
+  int motor2Speed = constrain(throtlleSetpoint - rollOutput + pitchOutput + yawOutput, 1000, 2000);
+  int motor3Speed = constrain(throtlleSetpoint - rollOutput - pitchOutput - yawOutput, 1000, 2000);
+  int motor4Speed = constrain(throtlleSetpoint + rollOutput - pitchOutput + yawOutput, 1000, 2000);
 
   // Enviar señales a los motores
   analogWrite(motor1Pin, motor1Speed);
@@ -245,3 +247,11 @@ void IRAM_ATTR handleYawPWM() {
     yawSetpoint = (micros() - yawPulseStart);  // Duración del pulso en microsegundos
   }
 }
+void IRAM_ATTR handlethrotllePWM() {
+  if (digitalRead(throtllePin)) {
+    throtllePulseStart = micros();  // Inicio del pulso
+  } else {
+    throtlleSetpoint = (micros() - throtllePulseStart);  // Duración del pulso en microsegundos
+  }
+}
+
