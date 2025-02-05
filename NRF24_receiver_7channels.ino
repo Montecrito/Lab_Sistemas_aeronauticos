@@ -23,7 +23,7 @@ Please, like share and subscribe : https://www.youtube.com/c/ELECTRONOOBS
 #include <Servo.h>  //To create PWM signals we need this lybrary
 
 const uint64_t pipeIn = 0xE8E8F0F0E1LL;     //Remember that this code is the same as in the transmitter
-RF24 radio(9, 10);  //CSN and CE pins
+RF24 radio(15, 4);  //CSN and CE pins
 
 // The sizeof this struct should not exceed 32 bytes
 struct Received_data {
@@ -74,13 +74,13 @@ void reset_the_Data()
 void setup()
 {
   //Attach the servo signal on pins from D2 to D8
-  channel_1.attach(2);
-  channel_2.attach(3);
-  channel_3.attach(4);
-  channel_4.attach(5);
-  channel_5.attach(6);
-  channel_6.attach(7);
-  channel_7.attach(8);
+  channel_1.attach(16);
+  channel_2.attach(5);
+  channel_3.attach(0);
+  channel_4.attach(2);
+  channel_5.attach(9);
+  //channel_6.attach(7);
+  //channel_7.attach(8);
   
   //We reset the received values
   reset_the_Data();
