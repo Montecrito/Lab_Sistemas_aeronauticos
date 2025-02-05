@@ -78,6 +78,3 @@ void loop()
 
   radio.write(&sent_data, sizeof(Data_to_be_sent));
 }
-
-
-
