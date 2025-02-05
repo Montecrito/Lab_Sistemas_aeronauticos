@@ -1,21 +1,3 @@
-/* Receiver code for the Arduino Radio control with PWM output
- * Install the NRF24 library to your IDE
- * Upload this code to the Arduino UNO, NANO, Pro mini (5V,16MHz)
- * Connect a NRF24 module to it:
- 
-    Module // Arduino UNO,NANO
-    
-    GND    ->   GND
-    Vcc    ->   3.3V
-    CE     ->   D9
-    CSN    ->   D10
-    CLK    ->   D13
-    MOSI   ->   D11
-    MISO   ->   D12
-
-This code receive 7 channels and create a PWM output for each one on D2, D3, D4, D5, D6, D7and D8
-Please, like share and subscribe : https://www.youtube.com/c/ELECTRONOOBS
-*/
 
 #include <SPI.h>
 #include <nRF24L01.h>
