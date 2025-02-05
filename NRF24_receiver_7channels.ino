@@ -14,8 +14,8 @@ struct Received_data {
   byte ch3;
   byte ch4;
   byte ch5;
-  byte ch6;
-  byte ch7;
+  //byte ch6;
+  //byte ch7;
 };
 
 Received_data received_data;
@@ -25,16 +25,16 @@ Servo channel_2;
 Servo channel_3;
 Servo channel_4;
 Servo channel_5;
-Servo channel_6;
-Servo channel_7;
+//Servo channel_6;
+//Servo channel_7;
 
 int ch1_value = 0;
 int ch2_value = 0;
 int ch3_value = 0;
 int ch4_value = 0;
 int ch5_value = 0;
-int ch6_value = 0;
-int ch7_value = 0;
+//int ch6_value = 0;
+//int ch7_value = 0;
 
 
 void reset_the_Data() 
@@ -45,8 +45,8 @@ void reset_the_Data()
   received_data.ch3 = 127;
   received_data.ch4 = 127;
   received_data.ch5 = 0;
-  received_data.ch6 = 0;
-  received_data.ch7 = 0;
+  //received_data.ch6 = 0;
+  //received_data.ch7 = 0;
 }
 
 
@@ -115,8 +115,8 @@ void loop()
   ch3_value = map(received_data.ch3,0,255,1000,2000);
   ch4_value = map(received_data.ch4,0,255,1000,2000);
   ch5_value = map(received_data.ch5,0,1,1000,2000);
-  ch6_value = map(received_data.ch6,0,1,1000,2000);
-  ch7_value = map(received_data.ch7,0,255,1000,2000);
+  //ch6_value = map(received_data.ch6,0,1,1000,2000);
+  //ch7_value = map(received_data.ch7,0,255,1000,2000);
 
   //Creathe the PWM signals
   channel_1.writeMicroseconds(ch1_value);  
@@ -124,8 +124,8 @@ void loop()
   channel_3.writeMicroseconds(ch3_value);  
   channel_4.writeMicroseconds(ch4_value);  
   channel_5.writeMicroseconds(ch5_value);  
-  channel_6.writeMicroseconds(ch6_value);  
-  channel_7.writeMicroseconds(ch7_value);  
+  //channel_6.writeMicroseconds(ch6_value);  
+  //channel_7.writeMicroseconds(ch7_value);  
   
   
 }//Loop end
