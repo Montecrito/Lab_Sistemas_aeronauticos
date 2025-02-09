@@ -68,13 +68,13 @@ void loop()
   Normal:    data.ch1 = map( analogRead(A0), 0, 1024, 0, 255);
   Reversed:  data.ch1 = map( analogRead(A0), 0, 1024, 255, 0);  */
   
-  sent_data.ch1 = map( analogRead(A0), 0, 1024, 0, 255);
+  sent_data.ch1 = map( analogRead(A4), 0, 1024, 0, 255);
   sent_data.ch2 = map( analogRead(A1), 0, 1024, 0, 255);
   sent_data.ch3 = map( analogRead(A2), 0, 1024, 0, 255);
   sent_data.ch4 = map( analogRead(A3), 0, 1024, 0, 255);
   sent_data.ch5 = digitalRead(2);
   sent_data.ch6 = digitalRead(3);
-  sent_data.ch7 = map( analogRead(A4), 0, 1024, 0, 255);
+  sent_data.ch7 = map( analogRead(A0), 0, 1024, 0, 255);
 
   radio.write(&sent_data, sizeof(Data_to_be_sent));
 }
