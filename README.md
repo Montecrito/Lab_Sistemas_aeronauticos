@@ -1,2 +1,3 @@
 informe del proyecto
-https://drive.google.com/drive/folders/1pMeKrErh_XqK81MOI-X9CFe3RM5lQVxY
+
+https://drive.google.com/file/d/17veVNatJeu4U2Ta3jW5Epvc2ckpqokDl/view?usp=drivesdk
